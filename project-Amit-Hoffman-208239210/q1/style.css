@@ -1,0 +1,57 @@
+html{
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: antiquewhite;
+    font-family: Arial,sans-serif;
+}
+
+.text-center{
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.card{
+  height: auto;
+    border: 4px,black;
+    border-radius: 8px;
+    margin: 10px;
+
+}
+
+.card-body
+{
+    text-align: center;
+    
+}
+
+.card-img{
+    height: 200px;
+    object-fit: cover;
+}
+
+h4.card
+{
+ color: darkcyan;
+ font-weight: bold;
+}
+
+h5.card
+{
+    color: black;
+}
+h6.card
+{
+    color: black;
+    font-weight: bold;
+    
+}
+
+.link
+{
+    background-color: lightpink;
+    border: 2px;
+    border-radius: 8px;
+    border-color: black;
+}
