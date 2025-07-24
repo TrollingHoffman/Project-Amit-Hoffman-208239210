@@ -1,373 +1,410 @@
-// Global variables
 const STORAGE_KEY = 'wingFestivalCandidates';
 let candidates = [];
 
-// DOM Elements
-const form = document.getElementById('registrationForm');
-const errorMessage = document.getElementById('errorMessage');
-const successMessage = document.getElementById('successMessage');
-const candidatesList = document.getElementById('candidatesList');
-const statisticsGrid = document.getElementById('statisticsGrid');
-const filterWingType = document.getElementById('filterWingType');
-const filterMusicStyle = document.getElementById('filterMusicStyle');
-const filterStatus = document.getElementById('filterStatus');
-
 document.addEventListener('DOMContentLoaded', function() {
-    loadItems();
-    setupEventListeners();
+    const form = document.getElementById('registrationForm');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
+    }
+
+    if (document.getElementById('candidatesList')) {
+        loadItems();
+        setupFilters();
+        setupModal();
+    }
 });
 
-function setupEventListeners() {
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
-    if (filterWingType) {
-        filterWingType.addEventListener('change', renderItems);
-    }
-    if (filterMusicStyle) {
-        filterMusicStyle.addEventListener('change', renderItems);
-    }
-    if (filterStatus) {
-        filterStatus.addEventListener('change', renderItems);
-    }
+function isOnlyLetters(text) {
+    return /^[a-zA-Zא-ת\s]+$/.test(text);
 }
 
-function handleFormSubmit(e) {
+function handleSubmit(e) {
     e.preventDefault();
-    
     hideMessages();
-    
-    const firstName = document.getElementById('firstName').value.trim();
-    const stageName = document.getElementById('stageName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const wingType = document.getElementById('wingType').value;
-    const musicStyle = document.getElementById('musicStyle').value;
-    const selectedSong = document.getElementById('selectedSong').value.trim();
-    const experience = document.getElementById('experience').value || 0;
-    const voiceChecked = document.getElementById('voiceChecked').checked;
     
     const candidate = {
         id: Date.now().toString(),
-        firstName: firstName,
-        stageName: stageName,
-        email: email,
-        wingType: wingType,
-        musicStyle: musicStyle,
-        selectedSong: selectedSong,
-        experience: parseInt(experience),
-        voiceChecked: voiceChecked,
+        firstName: getValue('firstName'),
+        stageName: getValue('stageName'),
+        email: getValue('email'),
+        wingType: getValue('wingType'),
+        musicStyle: getValue('musicStyle'),
+        selectedSong: getValue('selectedSong'),
+        experience: parseInt(getValue('experience')) || 0,
+        voiceChecked: document.getElementById('voiceChecked').checked,
         status: 'pending',
         registrationDate: new Date().toLocaleDateString('he-IL')
     };
 
-    if (validateForm(candidate)) {
-        saveItem(candidate);
-        showSuccessMessage('The Form have been Succsefully sent to the system, The candidate have been added');
-        form.reset();
+    if (validateCandidate(candidate)) {
+        saveCandidate(candidate);
+        showMessage('success', 'ההרשמה הושלמה בהצלחה!');
+        document.getElementById('registrationForm').reset();
     }
 }
 
-function validateForm(candidate) {
+function validateCandidate(candidate) {
     const errors = [];
-
+    
     if (!candidate.firstName) {
-        errors.push('First Name is Required');
+        errors.push('שם פרטי חובה');
+    } else if (!isOnlyLetters(candidate.firstName)) {
+        errors.push('שם פרטי יכול להכיל רק אותיות');
     }
-
+    
     if (!candidate.stageName) {
-        errors.push('Stage Name is Required');
+        errors.push('שם במה חובה');
+    } else if (!isOnlyLetters(candidate.stageName)) {
+        errors.push('שם במה יכול להכיל רק אותיות');
     }
-
+    
     if (!candidate.email) {
-        errors.push('Email is Required');     
+        errors.push('אימייל חובה');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate.email)) {
+        errors.push('אימייל לא תקין');
     }
-
+    
     if (!candidate.wingType) {
-        errors.push('You must Choose Wings Type');
+        errors.push('בחירת סוג כנפיים חובה');
     }
-
+    
     if (!candidate.musicStyle) {
-        errors.push('You must choose Music Style');
+        errors.push('בחירת סגנון מוזיקלי חובה');
     }
-
+    
     if (!candidate.selectedSong) {
-        errors.push('You must choose a Song for the Contest');
+        errors.push('שיר נבחר חובה');
     }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (candidate.email && !emailPattern.test(candidate.email)) {
-        errors.push('Unvalied Email Adress please try Again');
-    }
-
-    if (emailExists(candidate.email, candidate.id)) {
-        errors.push('This Email is Already at the System!');
-    }
-
+    
     if (candidate.experience < 0 || candidate.experience > 50) {
-        errors.push('The Experience have to be between 0-50 Years');
+        errors.push('ניסיון חייב להיות 0-50 שנים');
     }
-
+    
     if (candidate.experience > 3 && !candidate.voiceChecked) {
-        errors.push('Candidate that have less then 3 Years of experience have to Be Chacked By the Voltuer');
+        errors.push('מועמדים מנוסים חייבים בדיקת קול');
     }
-
+    
+    if (emailExists(candidate.email)) {
+        errors.push('אימייל כבר קיים במערכת');
+    }
+    
     if (errors.length > 0) {
-        showErrorMessage(errors.join('<br>'));
+        showMessage('error', errors.join('<br>'));
         return false;
     }
-
     return true;
 }
 
-function emailExists(email, currentId) {
-    for (let i = 0; i < candidates.length; i++) {
-        if (candidates[i].email === email && candidates[i].id !== currentId) {
-            return true;
-        }
-    }
-    return false;
+function loadItems() {
+    candidates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    renderCandidates();
+    updateStats();
 }
 
-function saveItem(candidate) {
+function saveCandidate(candidate) {
+    candidates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     candidates.push(candidate);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(candidates));
-    renderItems();
 }
 
-function loadItems() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-        candidates = JSON.parse(stored);
-    } else {
-        candidates = [];
-    }
-    renderItems();
+function saveAll() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(candidates));
 }
-
 
 function deleteItem(id) {
-    if (confirm('You wish to Delete this Candidate?')) {
-        candidates = candidates.filter(function(candidate) {
-            return candidate.id !== id;
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(candidates));
-        renderItems();
+    if (confirm('למחוק מועמד?')) {
+        candidates = candidates.filter(c => c.id !== id);
+        saveAll();
+        renderCandidates();
+        updateStats();
     }
 }
 
-function updateCandidateStatus(id, newStatus) {
-    for (let i = 0; i < candidates.length; i++) {
-        if (candidates[i].id === id) {
-            candidates[i].status = newStatus;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(candidates));
-            renderItems();
-            break;
-        }
+function updateStatus(id, status) {
+    const candidate = candidates.find(c => c.id === id);
+    if (candidate) {
+        candidate.status = status;
+        saveAll();
+        renderCandidates();
+        updateStats();
     }
 }
 
-function renderItems() {
+function renderCandidates() {
+    const container = document.getElementById('candidatesList');
     const filtered = getFilteredCandidates();
     
     if (filtered.length === 0) {
-        candidatesList.innerHTML = '<div class="no-candidates">There is no Candidate to Show!</div>';
-    } else {
-        candidatesList.innerHTML = '';
-        for (let i = 0; i < filtered.length; i++) {
-            const candidateCard = createCandidateCard(filtered[i]);
-            candidatesList.innerHTML += candidateCard;
-        }
+        container.innerHTML = '<div class="no-candidates">אין מועמדים להצגה</div>';
+        return;
     }
     
-    updateStatistics();
-}
-
-function getFilteredCandidates() {
-    const wingTypeFilter = filterWingType ? filterWingType.value : '';
-    const musicStyleFilter = filterMusicStyle ? filterMusicStyle.value : '';
-    const statusFilter = filterStatus ? filterStatus.value : '';
-    
-    const filtered = [];
-    
-    for (let i = 0; i < candidates.length; i++) {
-        const candidate = candidates[i];
-        
-        const wingTypeMatch = !wingTypeFilter || candidate.wingType === wingTypeFilter;
-        const musicStyleMatch = !musicStyleFilter || candidate.musicStyle === musicStyleFilter;
-        const statusMatch = !statusFilter || candidate.status === statusFilter;
-        
-        if (wingTypeMatch && musicStyleMatch && statusMatch) {
-            filtered.push(candidate);
-        }
-    }
-    
-    return filtered;
-}
-
-
-function createCandidateCard(candidate) {
-    const wingTypeText = getWingTypeText(candidate.wingType);
-    const musicStyleText = getMusicStyleText(candidate.musicStyle);
-    const statusText = getStatusText(candidate.status);
-
-    return `
+    container.innerHTML = filtered.map(candidate => `
         <div class="candidate-card ${candidate.status}">
             <div class="candidate-header">
                 <div class="candidate-name">${candidate.stageName}</div>
-                <span class="wing-badge ${candidate.wingType}">${wingTypeText}</span>
+                <div class="status-badges">
+                    <span class="wing-badge ${candidate.wingType}">${getWingText(candidate.wingType)}</span>
+                    <span class="status-badge status-${candidate.status}">${getStatusText(candidate.status)}</span>
+                </div>
             </div>
             
             <div class="candidate-details">
-                <div class="detail-item">
-                    <span class="detail-label">First Name:</span> ${candidate.firstName}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Email Adress:</span> ${candidate.email}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Music Style:</span> ${musicStyleText}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Selected Song:</span> ${candidate.selectedSong}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Experience(in Years):</span> ${candidate.experience} Years
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Voice Check:</span> ${candidate.voiceChecked ? 'Yes' : 'No'}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Status:</span> ${statusText}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Registrition Date:</span> ${candidate.registrationDate}
-                </div>
+                <div class="detail-item"><span class="detail-label">שם פרטי:</span> ${candidate.firstName}</div>
+                <div class="detail-item"><span class="detail-label">אימייל:</span> ${candidate.email}</div>
+                <div class="detail-item"><span class="detail-label">סגנון:</span> ${getMusicText(candidate.musicStyle)}</div>
+                <div class="detail-item"><span class="detail-label">שיר:</span> ${candidate.selectedSong}</div>
+                <div class="detail-item"><span class="detail-label">ניסיון:</span> ${candidate.experience} שנים</div>
+                <div class="detail-item"><span class="detail-label">בדיקת קול:</span> ${candidate.voiceChecked ? 'כן' : 'לא'}</div>
+                <div class="detail-item"><span class="detail-label">תאריך:</span> ${candidate.registrationDate}</div>
             </div>
             
             <div class="candidate-actions">
-                <button class="action-btn pass-btn" onclick="updateCandidateStatus('${candidate.id}', 'passed')">
-                    Pass the Audition
-                </button>
-                <button class="action-btn fail-btn" onclick="updateCandidateStatus('${candidate.id}', 'failed')">
-                    Failed at the Audition
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteItem('${candidate.id}')">
-                    Delete Candidate 
-                </button>
+                <button class="action-btn pass-btn" onclick="updateStatus('${candidate.id}', 'passed')">עבר</button>
+                <button class="action-btn fail-btn" onclick="updateStatus('${candidate.id}', 'failed')">נכשל</button>
+                <button class="action-btn pending-btn" onclick="updateStatus('${candidate.id}', 'pending')">ממתין</button>
+                <button class="action-btn edit-btn" onclick="openEdit('${candidate.id}')">עריכה</button>
+                <button class="action-btn delete-btn" onclick="deleteItem('${candidate.id}')">מחק</button>
             </div>
         </div>
-    `;
+    `).join('');
 }
 
-function getWingTypeText(wingType) {
-    switch(wingType) {
-        case 'feathers': return 'Feathers';
-        case 'leather': return 'Leather';
-        case 'light': return 'Light';
-        default: return wingType;
-    }
-}
-
-function getMusicStyleText(musicStyle) {
-    switch(musicStyle) {
-        case 'pop': return 'Pop';
-        case 'rock': return 'Rock';
-        case 'classical': return 'Clasic';
-        case 'folk': return 'Folk';
-        case 'jazz': return 'Jaxx';
-        case 'electronic': return 'Electronic';
-        default: return musicStyle;
-    }
-}
-
-function getStatusText(status) {
-    switch(status) {
-        case 'pending': return 'Pending for Audition';
-        case 'passed': return 'Passed the Audition';
-        case 'failed': return 'Failed at the Audition';
-        default: return status;
-    }
-}
-
-function updateStatistics() {
-    if (!statisticsGrid) return;
+function getFilteredCandidates() {
+    const wingFilter = getValue('filterWingType');
+    const musicFilter = getValue('filterMusicStyle');
+    const statusFilter = getValue('filterStatus');
     
-    const stats = calculateStatistics();
-    statisticsGrid.innerHTML = `
-        <div class="stat-card">
-            <div class="stat-number">${stats.total}</div>
-            <div class="stat-label">Count of Candatites</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">${stats.passed}</div>
-            <div class="stat-label">Pass the Audition</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">${stats.failed}</div>
-            <div class="stat-label">Failed at the Audition</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">${stats.pending}</div>
-            <div class="stat-label">Pedning</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">${stats.passRate}% </div>
-            <div class="stat-label">Succses Rate(%)</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">${stats.avgExperience} </div>
-            <div class="stat-label">Average Experience</div>
-        </div>
+    return candidates.filter(c => 
+        (!wingFilter || c.wingType === wingFilter) &&
+        (!musicFilter || c.musicStyle === musicFilter) &&
+        (!statusFilter || c.status === statusFilter)
+    );
+}
+
+function updateStats() {
+    const container = document.getElementById('statisticsGrid');
+    if (!container) return;
+    
+    const total = candidates.length;
+    const passed = candidates.filter(c => c.status === 'passed').length;
+    const failed = candidates.filter(c => c.status === 'failed').length;
+    const pending = candidates.filter(c => c.status === 'pending').length;
+    const avgExp = total > 0 ? Math.round(candidates.reduce((sum, c) => sum + c.experience, 0) / total) : 0;
+    const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+    const voiceChecked = Math.round((candidates.filter(c => c.voiceChecked).length / total) * 100) || 0;
+    const experienced = candidates.filter(c => c.experience >= 3).length;
+    
+    const wingCounts = {};
+    const musicCounts = {};
+    candidates.forEach(c => {
+        wingCounts[c.wingType] = (wingCounts[c.wingType] || 0) + 1;
+        musicCounts[c.musicStyle] = (musicCounts[c.musicStyle] || 0) + 1;
+    });
+    
+    const topWing = Object.keys(wingCounts).reduce((a, b) => wingCounts[a] > wingCounts[b] ? a : b, 'אין');
+    const topMusic = Object.keys(musicCounts).reduce((a, b) => musicCounts[a] > musicCounts[b] ? a : b, 'אין');
+    
+    container.innerHTML = `
+        <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">סה"כ מועמדים</div></div>
+        <div class="stat-card"><div class="stat-number">${passed}</div><div class="stat-label">עברו אודישן</div></div>
+        <div class="stat-card"><div class="stat-number">${failed}</div><div class="stat-label">נכשלו</div></div>
+        <div class="stat-card"><div class="stat-number">${pending}</div><div class="stat-label">ממתינים</div></div>
+        <div class="stat-card"><div class="stat-number">${passRate}%</div><div class="stat-label">אחוז הצלחה</div></div>
+        <div class="stat-card"><div class="stat-number">${avgExp}</div><div class="stat-label">ממוצע ניסיון</div></div>
+        <div class="stat-card"><div class="stat-number">${getWingText(topWing)}</div><div class="stat-label">סוג כנפיים פופולארי</div></div>
+        <div class="stat-card"><div class="stat-number">${getMusicText(topMusic)}</div><div class="stat-label">סגנון פופולרי</div></div>
+        <div class="stat-card"><div class="stat-number">${voiceChecked}%</div><div class="stat-label">עם בדיקת קול</div></div>
+        <div class="stat-card"><div class="stat-number">${experienced}</div><div class="stat-label">מנוסים (3+ שנים)</div></div>
     `;
 }
 
-function calculateStatistics() {
-    const total = candidates.length;
-    let passed = 0;
-    let failed = 0;
-    let pending = 0;
-    let totalExperience = 0;
+function setupModal() {
+    const modal = document.getElementById('editModal');
+    const form = document.getElementById('editForm');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelEdit');
+    
+    if (form) form.addEventListener('submit', handleEdit);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+}
 
-    for (let i = 0; i < candidates.length; i++) {
-        const candidate = candidates[i];
-        
-        if (candidate.status === 'passed') {
-            passed++;
-        } else if (candidate.status === 'failed') {
-            failed++;
-        } else {
-            pending++;
-        }
-        
-        totalExperience += candidate.experience;
-    }
+function openEdit(id) {
+    const candidate = candidates.find(c => c.id === id);
+    if (!candidate) return;
+    
+    document.getElementById('editId').value = candidate.id;
+    document.getElementById('editFirstName').value = candidate.firstName;
+    document.getElementById('editStageName').value = candidate.stageName;
+    document.getElementById('editEmail').value = candidate.email;
+    document.getElementById('editWingType').value = candidate.wingType;
+    document.getElementById('editMusicStyle').value = candidate.musicStyle;
+    document.getElementById('editSelectedSong').value = candidate.selectedSong;
+    document.getElementById('editExperience').value = candidate.experience;
+    document.getElementById('editVoiceChecked').checked = candidate.voiceChecked;
+    
+    document.getElementById('editModal').style.display = 'block';
+}
 
-    const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
-    const avgExperience = total > 0 ? Math.round(totalExperience / total) : 0;
+function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+    document.getElementById('editForm').reset();
+}
 
-    return {
-        total: total,
-        passed: passed,
-        failed: failed,
-        pending: pending,
-        passRate: passRate,
-        avgExperience: avgExperience
+function handleEdit(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('editId').value;
+    const candidate = candidates.find(c => c.id === id);
+    if (!candidate) return;
+    
+    const changes = {
+        firstName: getValue('editFirstName'),
+        stageName: getValue('editStageName'),
+        email: getValue('editEmail'),
+        wingType: getValue('editWingType'),
+        musicStyle: getValue('editMusicStyle'),
+        selectedSong: getValue('editSelectedSong'),
+        experience: parseInt(getValue('editExperience')) || 0,
+        voiceChecked: document.getElementById('editVoiceChecked').checked
     };
+    
+    if (validateEdit(changes, id)) {
+        Object.assign(candidate, changes);
+        saveAll();
+        renderCandidates();
+        updateStats();
+        closeModal();
+    }
 }
 
-function showErrorMessage(message) {
-    errorMessage.innerHTML = message;
-    errorMessage.style.display = 'block';
-    successMessage.style.display = 'none';
+function validateEdit(changes, id) {
+    if (!changes.firstName) {
+        alert('שם פרטי חובה');
+        return false;
+    }
+    
+    if (!isOnlyLetters(changes.firstName)) {
+        alert('שם פרטי יכול להכיל רק אותיות');
+        return false;
+    }
+    
+    if (!changes.stageName) {
+        alert('שם במה חובה');
+        return false;
+    }
+    
+    if (!isOnlyLetters(changes.stageName)) {
+        alert('שם במה יכול להכיל רק אותיות');
+        return false;
+    }
+    
+    if (!changes.email) {
+        alert('אימייל חובה');
+        return false;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(changes.email)) {
+        alert('אימייל לא תקין');
+        return false;
+    }
+    
+    if (!changes.wingType) {
+        alert('בחירת סוג כנפיים חובה');
+        return false;
+    }
+    
+    if (!changes.musicStyle) {
+        alert('בחירת סגנון מוזיקלי חובה');
+        return false;
+    }
+    
+    if (!changes.selectedSong) {
+        alert('שיר נבחר חובה');
+        return false;
+    }
+    
+    if (changes.experience < 0 || changes.experience > 50) {
+        alert('ניסיון 0-50 שנים');
+        return false;
+    }
+    
+    if (changes.experience > 3 && !changes.voiceChecked) {
+        alert('מנוסים צריכים בדיקת קול');
+        return false;
+    }
+    
+    if (candidates.some(c => c.email === changes.email && c.id !== id)) {
+        alert('אימייל כבר קיים');
+        return false;
+    }
+    
+    return true;
 }
 
-function showSuccessMessage(message) {
-    successMessage.innerHTML = message;
-    successMessage.style.display = 'block';
-    errorMessage.style.display = 'none';
+function setupFilters() {
+    const filters = ['filterWingType', 'filterMusicStyle', 'filterStatus'];
+    filters.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.addEventListener('change', () => {
+            renderCandidates();
+            updateStats();
+        });
+    });
+}
+
+function getValue(id) {
+    const element = document.getElementById(id);
+    return element ? element.value.trim() : '';
+}
+
+function showMessage(type, message) {
+    const errorDiv = document.getElementById('errorMessage');
+    const successDiv = document.getElementById('successMessage');
+    
+    hideMessages();
+    
+    if (type === 'error' && errorDiv) {
+        errorDiv.innerHTML = message;
+        errorDiv.style.display = 'block';
+    } else if (type === 'success' && successDiv) {
+        successDiv.innerHTML = message;
+        successDiv.style.display = 'block';
+    }
 }
 
 function hideMessages() {
-    errorMessage.style.display = 'none';
-    successMessage.style.display = 'none';
+    const errorDiv = document.getElementById('errorMessage');
+    const successDiv = document.getElementById('successMessage');
+    if (errorDiv) errorDiv.style.display = 'none';
+    if (successDiv) successDiv.style.display = 'none';
 }
+
+function emailExists(email) {
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    return existing.some(c => c.email === email);
+}
+
+function getWingText(type) {
+    const types = { feathers: 'נוצות', leather: 'עור', light: 'אור' };
+    return types[type] || type;
+}
+
+function getMusicText(style) {
+    const styles = { pop: 'פופ', rock: 'רוק', classical: 'קלאסי', folk: 'פולק', jazz: 'ג\'אז', electronic: 'אלקטרוני' };
+    return styles[style] || style;
+}
+
+function getStatusText(status) {
+    const statuses = { pending: 'ממתין', passed: 'עבר', failed: 'נכשל' };
+    return statuses[status] || status;
+}
+
+window.deleteItem = deleteItem;
+window.updateStatus = updateStatus;
+window.openEdit = openEdit;

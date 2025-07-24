@@ -3,7 +3,10 @@
     margin: 0;
     padding: 0;
 }
-
+html
+{
+    scroll-behavior: smooth;
+}
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #f5f6fa;
@@ -93,6 +96,9 @@ body {
     transition: all 0.2s ease;
     cursor: pointer;
     border: 1px solid #e9ecef;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .hero:hover {
@@ -104,6 +110,24 @@ body {
 .hero:hover .hero-name,
 .hero:hover .hero-status {
     color: white;
+}
+
+.hero.inactive {
+    background: #ecf0f1;
+    border-right: 4px solid #95a5a6;
+    cursor: default;
+    opacity: 0.7;
+}
+
+.hero.inactive:hover {
+    background: #ecf0f1;
+    transform: none;
+    color: inherit;
+}
+
+.hero.inactive .hero-name,
+.hero.inactive .hero-status {
+    color: #7f8c8d;
 }
 
 .hero-name {
@@ -136,24 +160,27 @@ body {
 
 .cards-continer {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 20px;
-    justify-content: center;
-    align-items: stretch;
+    align-items: center;
 }
 
 .mission {
-    background: #ffffff;
+     background: #ffffff;
     border-radius: 12px;
     padding: 24px;
     transition: all 0.2s ease;
-    flex: 1 1 300px;
-    max-width: 350px;
+    width: 100%;
+    max-width: 800px;
+    height: 100%;
+    max-height: 1000px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
     border: 1px solid #e9ecef;
+    scroll-margin-top: 120px;
 }
+
 
 .mission:hover {
     transform: translateY(-5px);
@@ -183,7 +210,7 @@ body {
 .img-container {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 400px;
     margin-bottom: 15px;
     border-radius: 8px;
     overflow: hidden;
@@ -329,6 +356,7 @@ body {
     }
     
     .nav-title {
+        margin-top: 40px;
         font-size: 16px;
         margin-bottom: 15px;
         padding-bottom: 10px;
@@ -366,7 +394,7 @@ body {
     
     .title {
         font-size: 24px;
-        margin-bottom: 30px;
+        margin-top: 30px;
     }
     
     .cards-continer {
@@ -378,6 +406,7 @@ body {
         max-width: 100%;
         flex: 1 1 250px;
         padding: 18px;
+         scroll-margin-top: 130px;
     }
     
     .mission-title {
@@ -385,7 +414,7 @@ body {
     }
     
     .img-container {
-        height: 160px;
+        height: 400px;
     }
 }
 
@@ -457,7 +486,7 @@ body {
     }
     
     .img-container {
-        height: 140px;
+        height: 400px;
         margin-bottom: 10px;
     }
     

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול מועמדים - פסטיבל "חידון שירים לבעלי כנפיים"</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="main-header">
+            <h1>ניהול מועמדים</h1>
+            <p class="subtitle">פסטיבל "חידון שירים לבעלי כנפיים" - מערכת ניהול מתקדמת</p>
+        </header>
+
+        <a href="index.html" class="floating-btn">חזרה להרשמה</a>
+        
+        <div class="management-section">
+            <div class="filters-section">
+                <h3>סינון מועמדים</h3>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="filterWingType">סוג כנפיים</label>
+                        <select id="filterWingType">
+                            <option value="">הכל</option>
+                            <option value="feathers">נוצות</option>
+                            <option value="leather">עור</option>
+                            <option value="light">אור</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterMusicStyle">סגנון מוזיקלי</label>
+                        <select id="filterMusicStyle">
+                            <option value="">הכל</option>
+                            <option value="pop">פופ</option>
+                            <option value="rock">רוק</option>
+                            <option value="classical">קלאסי</option>
+                            <option value="folk">פולק</option>
+                            <option value="jazz">ג'אז</option>
+                            <option value="electronic">אלקטרוני</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterStatus">מצב מועמד</label>
+                        <select id="filterStatus">
+                            <option value="">הכל</option>
+                            <option value="pending">ממתין לאודישן</option>
+                            <option value="passed">עבר אודישן</option>
+                            <option value="failed">נכשל באודישן</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="candidates-section">
+                <h3>רשימת מועמדים</h3>
+                <div class="candidates-list" id="candidatesList">
+                </div>
+            </div>
+
+            <div class="statistics-section">
+                <h3>סטטיסטיקות מתקדמות</h3>
+                <div class="stats-grid" id="statisticsGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>עריכת פרטי מועמד</h3>
+                <span class="close-btn" id="closeModal">&times;</span>
+            </div>
+            
+            <form id="editForm" class="edit-form">
+                <input type="hidden" id="editId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFirstName">שם פרטי</label>
+                        <input type="text" id="editFirstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editStageName">שם במה</label>
+                        <input type="text" id="editStageName" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editEmail">כתובת אימייל</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editWingType">סוג כנפיים</label>
+                        <select id="editWingType">
+                            <option value="">בחר סוג כנפיים</option>
+                            <option value="feathers">נוצות</option>
+                            <option value="leather">עור</option>
+                            <option value="light">אור</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editMusicStyle">סגנון מוזיקלי</label>
+                        <select id="editMusicStyle">
+                            <option value="">בחר סגנון מוזיקלי</option>
+                            <option value="pop">פופ</option>
+                            <option value="rock">רוק</option>
+                            <option value="classical">קלאסי</option>
+                            <option value="folk">פולק</option>
+                            <option value="jazz">ג'אז</option>
+                            <option value="electronic">אלקטרוני</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editSelectedSong">שיר נבחר</label>
+                    <input type="text" id="editSelectedSong" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editExperience">ניסיון בשנים</label>
+                    <input type="number" id="editExperience" min="0" max="50">
+                </div>
+                
+                <div class="form-group checkbox-container">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="editVoiceChecked">
+                        <label for="editVoiceChecked" class="checkbox-label">
+                            <span class="checkmark"></span>
+                            קול נבדק על ידי נשר מוסמך
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">
+                        שמור שינויים
+                    </button>
+                    <button type="button" class="cancel-btn" id="cancelEdit">
+                        ביטול
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -23,7 +23,7 @@
     <h1 class="title">לוח משמרות למשימות יומיות</h1>
     <div class="cards-continer">
         <!-- כרטיס 1 -->
-        <div class="mission">
+        <div class="mission" id="david-mission">
         <h2 class="mission-title">הכרזת הקמת מדינת ישראל</h2>
         <div class="assign-hero">דוד בן גוריון</div>
         <div class="img-container">
@@ -34,18 +34,18 @@
             <div class="difficulty-tag low">קרב קל</div>
         </div>
         <!-- כרטיס 2 -->
-        <div class="mission">
+        <div class="mission" id="spiderman-mission">
         <h2 class="mission-title">חילוץ חתולים מעץ ענק</h2>
         <div class="assign-hero">ספיידרמן</div>
         <div class="img-container">
-        <img src="images/spiderman.jpeg" alt="משימה 2" class="mission-img">
+        <img src="images/spiide.jpeg" alt="משימה 2" class="mission-img">
         <div class="tactical-exp">אני קופץ בין ענפים, תהיו רגועים</div>
             </div>
             <div class="mission-dur">45 דקות</div>
             <div class="difficulty-tag low">משימה קלה</div>
         </div>
         <!-- כרטיס 3 -->
-        <div class="mission">
+        <div class="mission" id="human-torch-mission">
         <h2 class="mission-title">עצירת רובוט ענק במרכז העיר</h2>
         <div class="assign-hero">הלפיד האנושי</div>
         <div class="img-container">
@@ -56,7 +56,7 @@
             <div class="difficulty-tag medium">סכנה בינונית</div>
         </div>
         <!-- כרטיס 4 -->
-        <div class="mission">
+        <div class="mission" id="hulk-mission">
         <h2 class="mission-title">מניעת פלישת חייזרים לקניון</h2>
         <div class="assign-hero">הענק הירוק</div>
         <div class="img-container">
@@ -67,11 +67,11 @@
             <div class="difficulty-tag high">דורש סיידקיק</div>
         </div>
         <!-- כרטיס 5 -->
-        <div class="mission">
+        <div class="mission" id="flash-mission">
         <h2 class="mission-title">הפסקת שריפה במפעל כימיקלים</h2>
         <div class="assign-hero">הפלאש</div>
         <div class="img-container">
-        <img src="images/flash.jpeg" alt="משימה 5" class="mission-img">
+        <img src="images/flashi.png" alt="משימה 5" class="mission-img">
         <div class="tactical-exp">אני רץ במהירות האור ויוצר רוח</div>
             </div>
             <div class="mission-dur">1.5 שעות</div>
@@ -83,37 +83,42 @@
     <div class="nav-title">גיבורי-על פעילים</div>
     <div class="hero-list">
         <!-- גיבור 1 -->
-         <div class="hero">
-        <div class="hero-name">הפלאש</div>
-        <div class="hero-status">במשימה</div>
+        <a href="#flash-mission" class="hero">
+            <div class="hero-name">הפלאש</div>
+            <div class="hero-status">במשימה</div>
+        </a>
+        
+        <!-- גיבור 2 -->
+        <div class="hero inactive">
+            <div class="hero-name">מר פנטסטיק</div>
+            <div class="hero-status">זמין</div>
         </div>
-          <!-- גיבור 2 -->
-         <div class="hero">
-        <div class="hero-name">מר פנטסטיק</div>
-        <div class="hero-status">זמין</div>
-        </div>
-          <!-- גיבור 3 -->
-         <div class="hero">
-        <div class="hero-name">הלפיד האנושי</div>
-        <div class="hero-status">במשימה</div>
-        </div>
-          <!-- גיבור 4 -->
-         <div class="hero">
-        <div class="hero-name">דוד בן גוריון</div>
-        <div class="hero-status">זמין</div>
-        </div>
-          <!-- גיבור 5 -->
-         <div class="hero">
-        <div class="hero-name">ספיידרמן</div>
-        <div class="hero-status">זמין</div>
-        </div>
-          <!-- גיבור 6 -->
-         <div class="hero">
-        <div class="hero-name">הענק הירוק</div>
-        <div class="hero-status">במשימה</div>
-        </div>
-</div>
- </nav>
+        
+        <!-- גיבור 3 -->
+        <a href="#human-torch-mission" class="hero">
+            <div class="hero-name">הלפיד האנושי</div>
+            <div class="hero-status">במשימה</div>
+        </a>
+        
+        <!-- גיבור 4 -->
+        <a href="#david-mission" class="hero">
+            <div class="hero-name">דוד בן גוריון</div>
+            <div class="hero-status">במשימה</div>
+        </a>
+        
+        <!-- גיבור 5 -->
+        <a href="#spiderman-mission" class="hero">
+            <div class="hero-name">ספיידרמן</div>
+            <div class="hero-status">במשימה</div>
+        </a>
+        
+        <!-- גיבור 6 -->
+        <a href="#hulk-mission" class="hero">
+            <div class="hero-name">הענק הירוק</div>
+            <div class="hero-status">במשימה</div>
+        </a>
+    </div>
+</nav>
 </main>
 <footer class ="footer">
 <button class="panic-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">כפתור פאניקה</button>

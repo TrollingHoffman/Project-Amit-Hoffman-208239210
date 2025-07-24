@@ -1,101 +1,106 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apllication Form - "Flying in style" Quiz Festival</title>
+    <title>טופס הרשמה - פסטיבל "חידון שירים לבעלי כנפיים"</title>
     <link rel="stylesheet" href="/q3/style.css">
 </head>
 
 <body>
-<div class="container">
-    <header>
-        <h1>"Fly In Style" - Quiz Festival</h1>
-        <p class="subtitle">The Competition is only for Flying Creaturs from any Spices!</p>
-    </header>
+    <div class="container">
+        <header class="main-header">
+            <h1>פסטיבל "חידון שירים לבעלי כנפיים"</h1>
+            <p class="subtitle">התחרות הגדולה ביותר ליצורים המעופפים! הצטרפו אלינו לחוויה מוזיקלית בלתי נשכחת</p>
+        </header>
 
-    <div class="main-content">
         <div class="form-section">
-            <h2>Application Form for Contesters</h2>
-            <div class="error-message" id="errorMessage"></div>
-            <div class="success-message" id="successMessage"></div>
-
-            <form id="registrationForm">
-                <div class="form-group">
-                    <label for="firstName">First Name<span class="required">*</span></label>
-                    <input type="text" id="firstName" name="firstName" required>
-                </div>
+            <div class="form-header">
+                <h2>טופס הרשמה למתמודדים</h2>
+                <p class="form-description">מלאו את הפרטים הבאים להשתתפות בתחרות</p>
+            </div>
             
-                <div class="form-group">
-                    <label for="stageName">Stage Name<span class="required">*</span></label>
-                    <input type="text" id="stageName" name="stageName" required>
-                </div>
+            <div class="message-container">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </div>
 
-                <div class="form-group">
-                    <label for="email"> Email Adress<span class="required">*</span></label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-            
-                <div class="form-group">
-                    <label for="wingType"> Wings Type<span class="required">*</span></label>
-                    <select id="wingType" name="wingType" required>
-                        <option value="">Choose Wings Type</option>
-                        <option value="feathers">Feathers</option>
-                        <option value="leather">Leather</option>
-                        <option value="light">Light</option>
-                    </select>
-                </div>
-            
-                <div class="form-group">
-                    <label for="musicStyle"> Music Style</label><span class="required">*</span></label>
-                    <select id="musicStyle" name="musicStyle" required>
-                        <option value="">Choose Style</option>
-                        <option value="pop">Pop</option>
-                        <option value="rock">Rock</option>
-                        <option value="classical">Classic</option>
-                        <option value="folk">Folk</option>
-                        <option value="jazz">Jazz</option>
-                        <option value="electronic">Electronic</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="selectedSong">Selected Song<span class="required">*</span></label>
-                    <input type="text" id="selectedSong" name="selectedSong" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="experience"> Former Experience in the Compatition (In Years)</label>
-                    <input type="number" id="experience" name="experience" min="0" max="50">
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="voiceChecked" name="voiceChecked">
-                        <label for="voiceChecked">The Voice have been checked by the Certified Voluter</label>
+            <form id="registrationForm" class="registration-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">שם פרטי <span class="required">*</span></label>
+                        <input type="text" id="firstName" name="firstName" placeholder="הזינו את שמכם הפרטי" required>
                     </div>
-
-                <button type="submit" class="submit-btn">Send Application</button>
-            </form>
-        </div>
-
-        <div class="management-section">
-            <h2>Manage Applications</h2>
-            <div class="candidates-list" id="candidatesList">
-
-            </div>
-        </div>
-    </div>
-
-    <div class="advanced-section">
-            <h2>Advanced Fuanctions</h2>
-            <div class="statictics">
-                <h3>Statistics</h3>
-                <div class="stats-grid" id="statisticsGrid">
+                    
+                    <div class="form-group">
+                        <label for="stageName">שם במה <span class="required">*</span></label>
+                        <input type="text" id="stageName" name="stageName" placeholder="השם שיוצג על הבמה" required>
+                    </div>
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label for="email">כתובת אימייל <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="wingType">סוג כנפיים <span class="required">*</span></label>
+                        <select id="wingType" name="wingType">
+                            <option value="">בחרו את סוג הכנפיים שלכם</option>
+                            <option value="feathers">נוצות</option>
+                            <option value="leather">עור</option>
+                            <option value="light">אור</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="musicStyle">סגנון מוזיקלי <span class="required">*</span></label>
+                        <select id="musicStyle" name="musicStyle">
+                            <option value="">בחרו סגנון מוזיקלי</option>
+                            <option value="pop">פופ</option>
+                            <option value="rock">רוק</option>
+                            <option value="classical">קלאסי</option>
+                            <option value="folk">פולק</option>
+                            <option value="jazz">ג'אז</option>
+                            <option value="electronic">אלקטרוני</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectedSong">שיר נבחר <span class="required">*</span></label>
+                    <input type="text" id="selectedSong" name="selectedSong" placeholder="שם השיר שתבצעו בתחרות" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">ניסיון קודם בתחרויות (בשנים)</label>
+                    <input type="number" id="experience" name="experience" min="0" max="50" value="0" placeholder="0">
+                    <small class="help-text">כמה שנות ניסיון יש לכם בתחרויות מוזיקליות?</small>
+                </div>
+
+                <div class="form-group checkbox-container">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="voiceChecked" name="voiceChecked">
+                        <label for="voiceChecked" class="checkbox-label">
+                            <span class="checkmark"></span>
+                            הקול נבדק על ידי נשר מוסמך
+                        </label>
+                    </div>
+                    <small class="help-text">חובה עבור מועמדים עם יותר מ-3 שנות ניסיון</small>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    שלחו את ההרשמה
+                </button>
+            </form>
+
+            <a href="view.html" class="floating-btn">
+                ניהול מועמדים
+            </a>
         </div>
     </div>
-   <script src="/q3/script.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
